@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
         if (room.host == socket) {
             if (room.players.length > 0) {
                 room.host = room.players[0];
-                room.host.emit('host'); //Fånga denna på frontent för att säga att hosten lämnade
+                room.host.emit('host');
             } else {
                 rooms.splice(rooms.indexOf(room), 1);
             }

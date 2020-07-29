@@ -38,8 +38,12 @@ io.on('connection', (socket) => {
 
     socket.on('join', (roomCode) => {
         room = rooms.find(room => room.id == roomCode);
-        if (! room) return;
+        if (! room) {
+            socket.emit('empty');
+            return;
+        };
         room.players.push(socket);
+        socket.emit('init', room.id);
     });
 
     socket.on('push', (question) => {
@@ -59,7 +63,6 @@ io.on('connection', (socket) => {
         let statics = staticQuestions.filter((q, index) => {
             return ! room.trash.includes(index);
         });
-        console.log(statics.length);
         if ((room.queue.filter(q => ! q.playerMade).length == 0 || ! room.playerMade.length) && ! statics.length == 0) {
             var index = Math.floor(Math.random()*statics.length);
             room.queue.push(statics[index]);
@@ -98,14 +101,12 @@ io.on('connection', (socket) => {
     });
 });
 
-/*
 setInterval(() => {
     console.clear();
     rooms.forEach((room) => {
         console.log(room.id + ": " + room.players.length);
     });
 }, 1000);
-*/
 
 const uid = "ACDEFGHJKLMNPQRTUVWXYZ234679";
 const uids = uid.length;

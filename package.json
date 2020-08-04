@@ -1,0 +1,19 @@
+{
+  "name": "klunk-server",
+  "version": "1.0.0",
+  "description": "1. `npm install`\r 2. `node main.js`\r 3. dubbelkolla att du kör mot `localhost:port` på clienten. \r 4. boom smack",
+  "main": "main.js",
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://code.fredag.nu/taco/klunk-server.git"
+  },
+  "author": "",
+  "license": "ISC"
+}

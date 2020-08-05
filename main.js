@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
         if (! room || room.host !== socket) return;
         room.queue.sort(function (a, b) { return 0.5 - Math.random() })
         if (room.queue.length) {
-            room.question = room.queue.pop().text;
+            room.question = room.queue.pop();
         } else {
             room.question = "slut på frågor";
         }

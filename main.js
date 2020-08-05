@@ -18,7 +18,7 @@ var db = firebase.firestore();
 var staticQuestions = [];
 db.collection("questions").get().then((querySnapshot) => {
     staticQuestions = querySnapshot.docs.map((doc) => {
-        return {id: doc.id, ...doc.data(), playerMade: false };
+        return { id: doc.id, ...doc.data(), playerMade: false };
     });
 });
 

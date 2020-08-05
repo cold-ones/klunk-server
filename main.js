@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
 
     socket.on('push', (text) => {
         if (! room) return;
-        room.playerMade.push({playerMade: true, text: text,  type: "pekleken"});
+        room.playerMade.push({ text: text,  type: "pekleken", playerMade: true });
     });
     
     socket.on('next', () => {

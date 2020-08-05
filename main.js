@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    // console.clear();
+    console.clear();
     rooms.forEach((room) => {
         console.log(room.id + ": " + room.players.length);
     });

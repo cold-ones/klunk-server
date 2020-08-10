@@ -2,7 +2,7 @@ const fs = require('fs');
 
 let staticQuestions = JSON.parse(fs.readFileSync('Questions.json'));
 staticQuestions = staticQuestions.map(question => {
-    return {playerMade: false, question: question}
+    return { playerMade: false, question: question }
 });
 
 const server = require('http').createServer();
@@ -42,7 +42,9 @@ io.on('connection', (socket) => {
             socket.emit('empty');
             return;
         };
-        room.players.push(socket);
+        if (! room.players.includes(socket)) {
+            room.players.push(socket);
+        }
         socket.emit('init', room.id);
     });
 

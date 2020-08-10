@@ -1,8 +1,25 @@
 const fs = require('fs');
 
-let staticQuestions = JSON.parse(fs.readFileSync('Questions.json'));
-staticQuestions = staticQuestions.map(question => {
-    return { playerMade: false, question: question }
+const firebase = require("firebase");
+const firebaseConfig = {
+    apiKey: "AIzaSyD5RAbdgbu2OdLa22vHDaeTOLh8LoW_3ic",
+    authDomain: "fredagsklunken.firebaseapp.com",
+    databaseURL: "https://fredagsklunken.firebaseio.com",
+    projectId: "fredagsklunken",
+    storageBucket: "fredagsklunken.appspot.com",
+    messagingSenderId: "892426973038",
+    appId: "1:892426973038:web:f17fcf19f8227412435b7f",
+    measurementId: "G-E1PDLDP4WG"
+  };
+
+firebase.initializeApp(firebaseConfig);
+
+var db = firebase.firestore();
+var staticQuestions = [];
+db.collection("questions").get().then((querySnapshot) => {
+    staticQuestions = querySnapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data(), playerMade: false };
+    });
 });
 
 const server = require('http').createServer();
@@ -48,16 +65,16 @@ io.on('connection', (socket) => {
         socket.emit('init', room.id);
     });
 
-    socket.on('push', (question) => {
+    socket.on('push', (text) => {
         if (! room) return;
-        room.playerMade.push({playerMade: true, question: question});
+        room.playerMade.push({ text: text,  type: "pekleken", playerMade: true });
     });
     
     socket.on('next', () => {
         if (! room || room.host !== socket) return;
         room.queue.sort(function (a, b) { return 0.5 - Math.random() })
         if (room.queue.length) {
-            room.question = room.queue.pop().question;
+            room.question = room.queue.pop();
         } else {
             room.question = "slut på frågor";
         }
@@ -82,7 +99,6 @@ io.on('connection', (socket) => {
                 room.playerMade.splice(index, 1);
             }
         }
-
         room.players.forEach((player) => {
             player.emit('question', room.question);
         });
@@ -124,11 +140,11 @@ function randomizeQueue(trash) {
     let queue = [];
     for (var i=0; i<5; i++) {
         var index = Math.floor(Math.random()*(staticQuestions.length));
-        while (trash.includes(index)) {
-            index = Math.floor(Math.random()*(staticQuestions.length));
-        }
+        // while (trash.includes(index)) {
+        //     index = Math.floor(Math.random()*(staticQuestions.length));
+        // }
         queue.push(staticQuestions[index]);
-        trash.push(index);
+        // trash.push(index);
     }
     return queue;
 }

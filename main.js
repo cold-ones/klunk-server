@@ -140,11 +140,11 @@ function randomizeQueue(trash) {
     let queue = [];
     for (var i=0; i<5; i++) {
         var index = Math.floor(Math.random()*(staticQuestions.length));
-        // while (trash.includes(index)) {
-        //     index = Math.floor(Math.random()*(staticQuestions.length));
-        // }
+        while (trash.includes(index)) {
+            index = Math.floor(Math.random()*(staticQuestions.length));
+        }
         queue.push(staticQuestions[index]);
-        // trash.push(index);
+        trash.push(index);
     }
     return queue;
 }

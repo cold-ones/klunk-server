@@ -8,5 +8,4 @@ production:
       - master
    script:
       - cd "/home/taco/klunk-server/"
-      - git pull
-
+      - git pull https://taco:$TOKEN@code.fredag.nu/dricka/klunk-server.git

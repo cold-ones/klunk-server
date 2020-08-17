@@ -1,0 +1,12 @@
+stages:
+   - deploy
+
+# production stage
+production:
+   stage: deploy
+   only:
+      - master
+   script:
+       cd /home/taco/klunk-server
+       git pull
+

@@ -124,6 +124,7 @@ setInterval(() => {
     rooms.forEach((room) => {
         console.log(room.id + ": " + room.players.length);
     });
+    console.log("pepe");
 }, 1000);
 
 const uid = "ACDEFGHJKLMNPQRTUVWXYZ234679";

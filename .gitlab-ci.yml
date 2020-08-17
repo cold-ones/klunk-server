@@ -9,3 +9,4 @@ production:
    script:
       - cd "/home/taco/klunk-server/"
       - git pull https://taco:$TOKEN@code.fredag.nu/dricka/klunk-server.git
+      - npm install

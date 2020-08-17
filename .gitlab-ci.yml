@@ -7,7 +7,7 @@ production:
    only:
       - master
    script:
+       cd /home/taco/klunk-server
        echo "ebic"
-       #cd /home/taco/klunk-server
        #git pull
 

@@ -123,6 +123,9 @@ setInterval(() => {
     console.clear();
     rooms.forEach((room) => {
         console.log(room.id + ": " + room.players.length);
+        room.players.forEach((player) => {
+            player.emit('question', room.question);
+        });
     });
 }, 1000);
 

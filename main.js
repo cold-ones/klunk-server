@@ -51,6 +51,7 @@ class Room {
         this.trash = [];
         this.queue = randomizeQueue(this.trash);
         this.playerMade = [];
+        this.lastActive = new Date();
     }
 }
 
@@ -73,11 +74,13 @@ io.on('connection', (socket) => {
             room.players.push(socket);
         }
         socket.emit('init', room.id);
+        room.lastActive = new Date();
     });
 
     socket.on('push', (text) => {
         if (! room) return;
         room.playerMade.push({ text: text,  type: "pekleken", playerMade: true });
+        room.lastActive = new Date();
     });
     
     socket.on('next', () => {
@@ -112,12 +115,14 @@ io.on('connection', (socket) => {
         room.players.forEach((player) => {
             player.emit('question', room.question);
         });
+        room.lastActive = new Date();
     });
 
     socket.on('disconnect', () => {
         if (! room) return;
         room.players.splice(room.players.indexOf(socket), 1);
-        
+        room.lastActive = new Date();
+
         if (room.host == socket) {
             if (room.players.length > 0) {
                 room.host = room.players[0];
@@ -129,13 +134,19 @@ io.on('connection', (socket) => {
     });
 });
 
+// Heartbeat
 setInterval(() => {
     console.clear();
     rooms.forEach((room) => {
-        console.log(room.id + ": " + room.players.length);
+        var inactiveTimer = new Date(Math.abs(new Date() - room.lastActive));
+        console.log(room.id + " (" +inactiveTimer.getMinutes()+ ")" + ": " + room.players.length);
         room.players.forEach((player) => {
             player.emit('question', room.question);
         });
+        if (inactiveTimer.getMinutes() >= 20) {
+            log.info(`Killed inactive room(${room.id}).`);
+            rooms.splice(rooms.indexOf(room), 1);
+        }
     });
 }, 1000);
 

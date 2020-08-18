@@ -1,4 +1,10 @@
-const fs = require('fs');
+const opts = {
+    errorEventName:'error',
+        logDirectory:'logs',
+        fileNamePattern:'log-<DATE>.log',
+        dateFormat:'YYYY.MM.DD'
+};
+const log = require('simple-node-logger').createRollingFileLogger(opts);
 
 const firebase = require("firebase");
 const firebaseConfig = {
@@ -27,8 +33,12 @@ const io = require('socket.io')(server);
 const port = 3000;
 
 server.listen(port, (err) => {
-    if (err) throw err
+    if (err) {
+        log.error(err);
+        throw err;
+    }
     console.log('Listening on port ' + port);
+    log.info('Server started successfully.');
 });
 
 var rooms = [];

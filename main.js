@@ -22,11 +22,24 @@ firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
 var staticQuestions = [];
-db.collection("questions").get().then((querySnapshot) => {
-    staticQuestions = querySnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data(), playerMade: false };
+
+db.collection('questions')
+  .onSnapshot(querySnapshot => {
+    querySnapshot.docChanges().forEach(change => {
+      if (change.type === 'added') {
+          staticQuestions.push({ id: change.doc.id, ...change.doc.data(), playerMade: false })
+      }
+      if (change.type === 'modified') {
+          var question = staticQuestions.filter(q => q.id == change.doc.id)[0];
+          question.text = change.doc.data().text; 
+          question.type = change.doc.data().type; 
+      }
+      if (change.type === 'removed') {
+        staticQuestions = staticQuestions.filter(q => q.id !== change.doc.id);
+      }
     });
-});
+
+  });
 
 const server = require('http').createServer();
 const io = require('socket.io')(server);
@@ -132,6 +145,35 @@ io.on('connection', (socket) => {
             }
         }
     });
+
+    socket.on('admin-newQuestion', (question) => {
+        if(! socket.admin) return;
+        addQuestionToFirebase(question, (payload) => {
+            socket.emit("admin-confirmCreate", payload)
+        })
+    });
+    socket.on('admin-updateQuestion', (question) => {
+        if(! socket.admin) return;
+        updateQuestionInFirebase(question);
+    });
+    socket.on('admin-removeQuestion', (question) => {
+        if(! socket.admin) return;
+        deleteQuestionFromFirebase(question);
+    });
+
+    socket.on('admin-auth', (passwd) => {
+        var ip = socket.request.connection.remoteAddress;
+
+        if(passwd === "hemligt123") {
+            socket.emit('admin-questions', staticQuestions);
+            socket.admin = true;
+            console.log("Successful login to admin from " + ip);
+        } else {
+            socket.emit('403');
+            console.log("Failed login to admin from " + ip);
+        }
+    })
+
 });
 
 // Heartbeat
@@ -172,3 +214,34 @@ function randomizeQueue(trash) {
     }
     return queue;
 }
+
+function addQuestionToFirebase(question, callback) {
+    db.collection("questions").add({
+        text: question.text,
+        type: question.type,
+    })
+    .then(function(docRef) {
+        callback({ ...question, id: docRef.id, edit:false});
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
+}
+
+function deleteQuestionFromFirebase(question) {
+    db.collection("questions").doc(question.id).delete()
+    .catch(function(error) {
+        console.error("Error deleting document: ", error);
+    });
+}
+
+function updateQuestionInFirebase(question) {
+    db.collection("questions").doc(question.id).update({
+        text: question.text,
+        type: question.type,
+    })
+    .catch(function(error) {
+        console.error("Error updating document: ", error);
+    });
+}
+

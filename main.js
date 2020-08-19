@@ -147,21 +147,30 @@ io.on('connection', (socket) => {
     });
 
     socket.on('admin-newQuestion', (question) => {
+        if(! socket.admin) return;
         addQuestionToFirebase(question, (payload) => {
             socket.emit("admin-confirmCreate", payload)
         })
     });
     socket.on('admin-updateQuestion', (question) => {
+        if(! socket.admin) return;
         updateQuestionInFirebase(question);
     });
     socket.on('admin-removeQuestion', (question) => {
+        if(! socket.admin) return;
         deleteQuestionFromFirebase(question);
-
     });
 
-    socket.on('admin-auth', () => {
-        if(true) {
+    socket.on('admin-auth', (passwd) => {
+        var ip = socket.request.connection.remoteAddress;
+
+        if(passwd === "hemligt123") {
             socket.emit('admin-questions', staticQuestions);
+            socket.admin = true;
+            console.log("Successful login to admin from " + ip);
+        } else {
+            socket.emit('403');
+            console.log("Failed login to admin from " + ip);
         }
     })
 

@@ -167,10 +167,10 @@ io.on('connection', (socket) => {
         if(passwd === "hemligt123") {
             socket.emit('admin-questions', staticQuestions);
             socket.admin = true;
-            console.log("Successful login to admin from " + ip);
+            log.info("Successful login to admin from " + ip);
         } else {
             socket.emit('403');
-            console.log("Failed login to admin from " + ip);
+            log.info("Failed login to admin from " + ip);
         }
     })
 
@@ -223,15 +223,15 @@ function addQuestionToFirebase(question, callback) {
     .then(function(docRef) {
         callback({ ...question, id: docRef.id, edit:false});
     })
-    .catch(function(error) {
-        console.error("Error adding document: ", error);
+    .catch(function(err) {
+        log.error("Error adding document: ", err);
     });
 }
 
 function deleteQuestionFromFirebase(question) {
     db.collection("questions").doc(question.id).delete()
-    .catch(function(error) {
-        console.error("Error deleting document: ", error);
+    .catch(function(err) {
+        log.error("Error deleting document: ", err);
     });
 }
 
@@ -240,8 +240,8 @@ function updateQuestionInFirebase(question) {
         text: question.text,
         type: question.type,
     })
-    .catch(function(error) {
-        console.error("Error updating document: ", error);
+    .catch(function(err) {
+        log.error("Error updating document: ", err);
     });
 }
 

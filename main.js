@@ -90,9 +90,9 @@ io.on('connection', (socket) => {
         room.lastActive = new Date();
     });
 
-    socket.on('push', (text) => {
+    socket.on('push', (question) => {
         if (! room) return;
-        room.playerMade.push({ text: text,  type: "pekleken", playerMade: true });
+        room.playerMade.push({ text: question.text,  type: question.type, playerMade: true });
         room.lastActive = new Date();
     });
     

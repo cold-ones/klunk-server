@@ -6,17 +6,19 @@ const opts = {
 };
 const log = require('simple-node-logger').createRollingFileLogger(opts);
 
+require('dotenv').config();
+
 const firebase = require("firebase");
 const firebaseConfig = {
-    apiKey: "AIzaSyD5RAbdgbu2OdLa22vHDaeTOLh8LoW_3ic",
-    authDomain: "fredagsklunken.firebaseapp.com",
-    databaseURL: "https://fredagsklunken.firebaseio.com",
-    projectId: "fredagsklunken",
-    storageBucket: "fredagsklunken.appspot.com",
-    messagingSenderId: "892426973038",
-    appId: "1:892426973038:web:f17fcf19f8227412435b7f",
-    measurementId: "G-E1PDLDP4WG"
-  };
+    appId: process.env.APP_ID,
+    apiKey: process.env.API_KEY,
+    projectId: process.env.PROJECT_ID,
+    authDomain: process.env.AUTH_DOMAIN,
+    databaseURL: process.env.DATABASE_URL,
+    measurementId: process.env.MEASUREMENT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+};
 
 firebase.initializeApp(firebaseConfig);
 
@@ -24,7 +26,7 @@ var db = firebase.firestore();
 var staticQuestions = [];
 
 db.collection('questions')
-  .onSnapshot(querySnapshot => {
+  .onSnapshot(querySnapshot => {´
     querySnapshot.docChanges().forEach(change => {
       if (change.type === 'added') {
           staticQuestions.push({ id: change.doc.id, ...change.doc.data(), playerMade: false })
